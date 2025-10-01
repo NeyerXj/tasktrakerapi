@@ -16,6 +16,7 @@ async function bootstrap() {
   .setDescription("API documentation for task tracker api!")
   .setVersion("1.0.0")
   .setContact("GitHub" , "https://github.com/NeyerXj", "ret.kol.az@gmail.com")
+  .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'defaultBearerAuth')
   .build();
 
   const document = SwaggerModule.createDocument(app, config)

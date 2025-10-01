@@ -25,6 +25,16 @@ export class TaskService {
             return this.taskRepository.find({ where: { userId } });
         }
 
+        async getTaskById(id: string){
+            const task = await this.taskRepository.findOne({where:{
+                id: id
+            }})
+            if(!task){
+                throw new NotFoundException('Task not found')
+            }
+            return task
+        }
+
         async createTask(dto: CreateTaskDto, id: string): Promise<TaskEntity> {
             const { title, context, isCompleted} = dto;
             const userId = id
