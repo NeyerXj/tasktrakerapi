@@ -1,10 +1,11 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { CreateTag } from './dto/create-tag.dto';
 import { Authorization } from 'src/user/decorators/auth.decor';
 import { Authorized } from 'src/user/decorators/authorizate.decor';
 import { PinTag } from './dto/pin-tag.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DeleteTag } from './dto/delete-tag.dto';
 
 @ApiTags('Tag')
 @ApiBearerAuth('defaultBearerAuth')
@@ -29,5 +30,23 @@ export class TagController {
   @ApiBody({ type: PinTag })
   async pinTask(@Authorized('id') id: string,@Body() dto: PinTag){
     return await this.tagService.pinTask(id, dto)
+  }
+
+  @Authorization()
+  @ApiOperation({ summary: 'Удалить существующий тег' })
+  @ApiResponse({ status: 200, description: 'Тег удален' })
+  @ApiResponse({ status: 404, description: 'Tag not found | Task not found' })
+  @Delete('delete')
+  async deleteTag(@Authorized('id') id: string,@Body() dto: DeleteTag){
+    return await this.tagService.deleteTag(id, dto)
+  }
+
+  @Authorization()
+  @ApiOperation({ summary: 'Получить все теги' })
+  @ApiResponse({ status: 200, description: 'Массивы тегов' })
+  @ApiResponse({ status: 404, description: 'Tag not found | Task not found' })
+  @Get('all')
+  async getAll(@Authorized('id') id: string){
+    return await this.tagService.getAllTags(id)
   }
 }

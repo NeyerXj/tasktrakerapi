@@ -6,6 +6,7 @@ import { CreateTag } from './dto/create-tag.dto';
 import { TaskService } from 'src/task/task.service';
 import { NotFoundError } from 'rxjs';
 import { PinTag } from './dto/pin-tag.dto';
+import { DeleteTag } from './dto/delete-tag.dto';
 
 @Injectable()
 export class TagService {
@@ -66,5 +67,30 @@ export class TagService {
         tag.taskId = task.id;
         const updated = await this.tagRepository.save(tag); // сохранит и вернёт обновлённую сущность
         return updated;
+    }
+
+    async deleteTag(userId: string, dto: DeleteTag){
+        const tagId = dto.tagid;
+        if(!userId){
+            throw new NotFoundException("User not found")
+        }
+
+        const tag = await this.tagRepository.findOne({where:{
+            id: tagId
+        }})
+
+        if ( tag?.userOwnerId !== userId) throw new NotFoundException('Task not found');
+
+        return await this.tagRepository.delete(tagId)
+    }
+
+    async getAllTags(userId: string){
+        if(!userId){
+            throw new NotFoundException("User not found")
+        }
+
+        return await this.tagRepository.find({where:{
+            userOwnerId: userId
+        }})
     }
 }
